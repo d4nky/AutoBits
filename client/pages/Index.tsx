@@ -361,20 +361,20 @@ export default function Index() {
               <h4 className="font-semibold text-foreground mb-4">Product</h4>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <Link
-                    to="/marketplace"
+                  <a
+                    href="/marketplace"
                     className="text-muted-foreground hover:text-primary transition-colors"
                   >
                     Marketplace
-                  </Link>
+                  </a>
                 </li>
                 <li>
-                  <Link
-                    to="/creator-dashboard"
+                  <a
+                    href="/creator-dashboard"
                     className="text-muted-foreground hover:text-primary transition-colors"
                   >
                     For Creators
-                  </Link>
+                  </a>
                 </li>
               </ul>
             </div>
