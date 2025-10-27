@@ -241,10 +241,10 @@ export default function Index() {
               "HR & Recruitment",
               "Customer Support",
             ].map((category) => (
-              <Link
+              <a
                 key={category}
-                to={`/marketplace?category=${category.toLowerCase()}`}
-                className="bg-white border border-border rounded-lg p-4 hover:border-primary hover:shadow-md transition-all group"
+                href={`/marketplace?category=${category.toLowerCase()}`}
+                className="block bg-white border border-border rounded-lg p-4 hover:border-primary hover:shadow-md transition-all group cursor-pointer"
               >
                 <div className="flex items-center justify-between">
                   <span className="font-medium text-foreground">
@@ -252,7 +252,7 @@ export default function Index() {
                   </span>
                   <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
                 </div>
-              </Link>
+              </a>
             ))}
           </div>
         </div>
