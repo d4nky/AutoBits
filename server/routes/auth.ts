@@ -42,7 +42,8 @@ export const handleSignup: RequestHandler = async (req, res) => {
 
     res.json({
       success: true,
-      message: "Account created successfully. Please check your email to verify.",
+      message:
+        "Account created successfully. Please check your email to verify.",
     });
   } catch (error) {
     if (error instanceof z.ZodError) {

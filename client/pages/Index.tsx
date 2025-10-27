@@ -336,7 +336,8 @@ export default function Index() {
             Ready to automate your workflow?
           </h2>
           <p className="text-lg mb-8 opacity-90 max-w-2xl mx-auto">
-            Join thousands of creators and users building the future of automation
+            Join thousands of creators and users building the future of
+            automation
           </p>
           <a
             href="/signup"

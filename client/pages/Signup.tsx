@@ -42,7 +42,10 @@ export default function Signup() {
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="creator" id="creator" />
-                  <Label htmlFor="creator" className="font-normal cursor-pointer">
+                  <Label
+                    htmlFor="creator"
+                    className="font-normal cursor-pointer"
+                  >
                     Creator - Selling automations
                   </Label>
                 </div>

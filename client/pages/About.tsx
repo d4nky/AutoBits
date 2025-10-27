@@ -13,8 +13,8 @@ export default function About() {
             automation.
           </p>
           <button className="inline-flex items-center justify-center h-10 px-4 py-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md text-sm font-medium transition-colors">
-            This page will include: Company story, team profiles, mission statement,
-            and community values
+            This page will include: Company story, team profiles, mission
+            statement, and community values
           </button>
         </div>
       </section>

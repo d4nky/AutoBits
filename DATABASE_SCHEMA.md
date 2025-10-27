@@ -14,6 +14,7 @@ This file documents the database structure needed for AutoBits. Follow the steps
 ## Tables
 
 ### 1. Users Table
+
 Stores user account information.
 
 ```sql
@@ -29,14 +30,15 @@ CREATE TABLE users (
 );
 
 -- TODO: Add RLS policy so users can only read/update their own profile
-CREATE POLICY "Users can read own profile" ON users 
+CREATE POLICY "Users can read own profile" ON users
   FOR SELECT USING (auth.uid() = id);
 
-CREATE POLICY "Users can update own profile" ON users 
+CREATE POLICY "Users can update own profile" ON users
   FOR UPDATE USING (auth.uid() = id);
 ```
 
 ### 2. Automations Table
+
 Stores automation workflow listings.
 
 ```sql
@@ -60,17 +62,18 @@ CREATE TABLE automations (
 );
 
 -- TODO: Add RLS policies for read (public), create (auth), update (creator only), delete (creator/admin)
-CREATE POLICY "Automations are viewable by everyone" ON automations 
+CREATE POLICY "Automations are viewable by everyone" ON automations
   FOR SELECT USING (status = 'published');
 
-CREATE POLICY "Creators can create automations" ON automations 
+CREATE POLICY "Creators can create automations" ON automations
   FOR INSERT WITH CHECK (auth.uid() = creator_id);
 
-CREATE POLICY "Creators can update own automations" ON automations 
+CREATE POLICY "Creators can update own automations" ON automations
   FOR UPDATE USING (auth.uid() = creator_id);
 ```
 
 ### 3. Reviews Table
+
 Stores ratings and reviews.
 
 ```sql
@@ -86,11 +89,12 @@ CREATE TABLE reviews (
 );
 
 -- TODO: Add RLS policies (users can only review once, only update own review)
-CREATE POLICY "Reviews are viewable by everyone" ON reviews 
+CREATE POLICY "Reviews are viewable by everyone" ON reviews
   FOR SELECT USING (true);
 ```
 
 ### 4. Purchases Table
+
 Stores transaction records.
 
 ```sql
@@ -110,11 +114,12 @@ CREATE TABLE purchases (
 );
 
 -- TODO: Add RLS policies (buyers can see own purchases, creators can see own earnings, admins see all)
-CREATE POLICY "Buyers can see own purchases" ON purchases 
+CREATE POLICY "Buyers can see own purchases" ON purchases
   FOR SELECT USING (auth.uid() = buyer_id OR auth.uid() = creator_id);
 ```
 
 ### 5. Payouts Table
+
 Tracks creator payouts.
 
 ```sql
@@ -131,11 +136,12 @@ CREATE TABLE payouts (
 );
 
 -- TODO: Add RLS policies (creators can only see own payouts)
-CREATE POLICY "Creators can see own payouts" ON payouts 
+CREATE POLICY "Creators can see own payouts" ON payouts
   FOR SELECT USING (auth.uid() = creator_id);
 ```
 
 ### 6. Creator Subscriptions Table
+
 Stores creator subscription tier information.
 
 ```sql
@@ -161,10 +167,8 @@ Create the following storage buckets in Supabase:
 
 1. **automations** - Store uploaded automation files (.json, .yaml, .zip)
    - TODO: Set up RLS so users can only upload to their own folder
-   
 2. **avatars** - Store user profile pictures
    - TODO: Set up RLS so users can only upload to their own avatar
-   
 3. **previews** - Store automation preview images
    - TODO: Set up RLS for public read, creator write
 
@@ -173,6 +177,7 @@ Create the following storage buckets in Supabase:
 ## API Endpoints to Implement
 
 ### Authentication
+
 - `POST /api/auth/signup` - Register new account
 - `POST /api/auth/login` - Login
 - `POST /api/auth/logout` - Logout
@@ -181,18 +186,21 @@ Create the following storage buckets in Supabase:
 - `GET /api/auth/me` - Get current user
 
 ### Marketplace
+
 - `GET /api/automations` - List all automations (with filters: category, search, price range, rating)
 - `GET /api/automations/:id` - Get automation details
 - `GET /api/automations/:id/reviews` - Get reviews for an automation
 - `GET /api/categories` - List all categories
 
 ### Purchases
+
 - `POST /api/purchases/intent` - Create Stripe payment intent
 - `POST /api/purchases/confirm` - Confirm purchase after Stripe payment
 - `GET /api/purchases` - Get user's purchases
 - `GET /api/purchases/:id/download` - Download purchased automation file
 
 ### Creator
+
 - `POST /api/creator/automations` - Upload new automation
 - `GET /api/creator/automations` - List creator's automations
 - `PATCH /api/creator/automations/:id` - Update automation
@@ -201,11 +209,13 @@ Create the following storage buckets in Supabase:
 - `POST /api/creator/subscription/upgrade` - Upgrade subscription tier
 
 ### Reviews
+
 - `POST /api/reviews` - Create review/rating
 - `PATCH /api/reviews/:id` - Update own review
 - `DELETE /api/reviews/:id` - Delete own review
 
 ### Admin
+
 - `GET /api/admin/users` - List all users
 - `PATCH /api/admin/users/:id/status` - Ban/unban user
 - `GET /api/admin/automations` - List all automations
