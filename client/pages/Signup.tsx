@@ -51,9 +51,9 @@ export default function Signup() {
               </RadioGroup>
             </div>
 
-            <Button className="w-full bg-primary hover:bg-primary/90">
+            <button className="w-full h-10 rounded-md px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-colors">
               Create Account
-            </Button>
+            </button>
 
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
@@ -64,12 +64,12 @@ export default function Signup() {
               </div>
             </div>
 
-            <Button variant="outline" className="w-full">
+            <button className="w-full h-10 rounded-md px-4 py-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground font-medium transition-colors">
               Sign up with Google
-            </Button>
-            <Button variant="outline" className="w-full">
+            </button>
+            <button className="w-full h-10 rounded-md px-4 py-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground font-medium transition-colors">
               Sign up with GitHub
-            </Button>
+            </button>
 
             <p className="text-center text-sm text-muted-foreground">
               Already have an account?{" "}
