@@ -1,9 +1,7 @@
 import { Header } from "@/components/Header";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Link } from "react-router-dom";
 
 export default function Signup() {
   return (
