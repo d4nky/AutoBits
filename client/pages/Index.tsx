@@ -338,16 +338,12 @@ export default function Index() {
           <p className="text-lg mb-8 opacity-90 max-w-2xl mx-auto">
             Join thousands of creators and users building the future of automation
           </p>
-          <Button
-            size="lg"
-            variant="secondary"
-            className="bg-white hover:bg-white/90 text-primary"
-            asChild
+          <Link
+            to="/signup"
+            className="inline-flex items-center justify-center gap-2 h-11 rounded-md px-8 bg-white hover:bg-white/90 text-primary font-medium transition-colors"
           >
-            <Link to="/signup">
-              Start Automating Now <ArrowRight className="w-5 h-5 ml-2" />
-            </Link>
-          </Button>
+            Start Automating Now <ArrowRight className="w-5 h-5" />
+          </Link>
         </div>
       </section>
 
