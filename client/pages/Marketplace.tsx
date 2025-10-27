@@ -1,5 +1,4 @@
 import { Header } from "@/components/Header";
-import { Button } from "@/components/ui/button";
 
 export default function Marketplace() {
   return (
@@ -15,10 +14,10 @@ export default function Marketplace() {
             Browse, search, and filter automation workflows by category, price,
             and ratings.
           </p>
-          <Button variant="outline">
+          <button className="inline-flex items-center justify-center h-10 px-4 py-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md text-sm font-medium transition-colors">
             This page will include: Search filters, categories, automation cards
             with ratings, and sorting options
-          </Button>
+          </button>
         </div>
       </section>
     </div>
