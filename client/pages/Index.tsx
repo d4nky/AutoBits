@@ -30,18 +30,18 @@ export default function Index() {
               daily tasks with community-built solutions.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button
-                size="lg"
-                className="bg-primary hover:bg-primary/90"
-                asChild
+              <Link
+                to="/marketplace"
+                className="inline-flex items-center justify-center gap-2 h-11 rounded-md px-8 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
               >
-                <Link to="/marketplace">
-                  Explore Automations <ArrowRight className="w-5 h-5 ml-2" />
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link to="/creator-dashboard">Start Creating</Link>
-              </Button>
+                Explore Automations <ArrowRight className="w-5 h-5" />
+              </Link>
+              <Link
+                to="/creator-dashboard"
+                className="inline-flex items-center justify-center gap-2 h-11 rounded-md px-8 border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors"
+              >
+                Start Creating
+              </Link>
             </div>
 
             {/* Stats */}
