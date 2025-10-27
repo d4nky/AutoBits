@@ -44,12 +44,18 @@ export function Header() {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center gap-3">
-            <Button variant="outline" asChild>
-              <Link to="/login">Sign In</Link>
-            </Button>
-            <Button className="bg-primary hover:bg-primary/90" asChild>
-              <Link to="/signup">Get Started</Link>
-            </Button>
+            <Link
+              to="/login"
+              className="inline-flex items-center justify-center h-10 px-4 py-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md text-sm font-medium transition-colors"
+            >
+              Sign In
+            </Link>
+            <Link
+              to="/signup"
+              className="inline-flex items-center justify-center h-10 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md text-sm font-medium transition-colors"
+            >
+              Get Started
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
