@@ -30,18 +30,18 @@ export default function Index() {
               daily tasks with community-built solutions.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link
-                to="/marketplace"
+              <a
+                href="/marketplace"
                 className="inline-flex items-center justify-center gap-2 h-11 rounded-md px-8 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
               >
                 Explore Automations <ArrowRight className="w-5 h-5" />
-              </Link>
-              <Link
-                to="/creator-dashboard"
+              </a>
+              <a
+                href="/creator-dashboard"
                 className="inline-flex items-center justify-center gap-2 h-11 rounded-md px-8 border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors"
               >
                 Start Creating
-              </Link>
+              </a>
             </div>
 
             {/* Stats */}
@@ -208,12 +208,12 @@ export default function Index() {
         </div>
 
         <div className="text-center">
-          <Link
-            to="/marketplace"
+          <a
+            href="/marketplace"
             className="inline-flex items-center justify-center gap-2 h-11 rounded-md px-8 border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors"
           >
             View All Automations <ArrowRight className="w-5 h-5" />
-          </Link>
+          </a>
         </div>
       </section>
 
@@ -338,12 +338,12 @@ export default function Index() {
           <p className="text-lg mb-8 opacity-90 max-w-2xl mx-auto">
             Join thousands of creators and users building the future of automation
           </p>
-          <Link
-            to="/signup"
+          <a
+            href="/signup"
             className="inline-flex items-center justify-center gap-2 h-11 rounded-md px-8 bg-white hover:bg-white/90 text-primary font-medium transition-colors"
           >
             Start Automating Now <ArrowRight className="w-5 h-5" />
-          </Link>
+          </a>
         </div>
       </section>
 
