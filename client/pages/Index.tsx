@@ -208,11 +208,12 @@ export default function Index() {
         </div>
 
         <div className="text-center">
-          <Button variant="outline" size="lg" asChild>
-            <Link to="/marketplace">
-              View All Automations <ArrowRight className="w-5 h-5 ml-2" />
-            </Link>
-          </Button>
+          <Link
+            to="/marketplace"
+            className="inline-flex items-center justify-center gap-2 h-11 rounded-md px-8 border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors"
+          >
+            View All Automations <ArrowRight className="w-5 h-5" />
+          </Link>
         </div>
       </section>
 
