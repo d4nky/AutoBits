@@ -382,12 +382,12 @@ export default function Index() {
               <h4 className="font-semibold text-foreground mb-4">Company</h4>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <Link
-                    to="/about"
+                  <a
+                    href="/about"
                     className="text-muted-foreground hover:text-primary transition-colors"
                   >
                     About
-                  </Link>
+                  </a>
                 </li>
                 <li>
                   <a
