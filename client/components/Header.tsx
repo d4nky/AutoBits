@@ -35,7 +35,7 @@ export function Header() {
               </span>
             </div>
             <span className="text-xl font-bold text-foreground hidden sm:inline">
-              JobMarket
+              {t("header.jobMarket")}
             </span>
           </a>
 
@@ -45,26 +45,27 @@ export function Header() {
               href="/marketplace"
               className="text-foreground hover:text-primary transition-colors"
             >
-              Browse Jobs
+              {t("header.browseJobs")}
             </a>
             {isAuth && (
               <a
                 href="/creator-dashboard"
                 className="text-foreground hover:text-primary transition-colors"
               >
-                Dashboard
+                {t("common.dashboard")}
               </a>
             )}
             <a
               href="/about"
               className="text-foreground hover:text-primary transition-colors"
             >
-              About
+              {t("header.about")}
             </a>
           </nav>
 
-          {/* Desktop Auth */}
+          {/* Desktop Controls */}
           <div className="hidden md:flex items-center gap-3">
+            <LanguageSwitcher />
             {isAuth ? (
               <div className="relative">
                 <button
@@ -72,7 +73,7 @@ export function Header() {
                   className="inline-flex items-center gap-2 h-10 px-3 border border-primary/30 bg-secondary hover:bg-secondary/80 text-foreground rounded-md font-medium transition-colors"
                 >
                   <User className="w-4 h-4" />
-                  Account
+                  {t("common.profile")}
                 </button>
                 {isUserMenuOpen && (
                   <div className="absolute right-0 mt-1 w-40 bg-white border border-border rounded-lg shadow-lg animate-slide-up">
@@ -81,14 +82,14 @@ export function Header() {
                       className="block px-4 py-2 text-foreground hover:bg-secondary transition-colors first:rounded-t-lg"
                       onClick={() => setIsUserMenuOpen(false)}
                     >
-                      My Profile
+                      {t("header.myProfile")}
                     </a>
                     <button
                       onClick={handleLogout}
                       className="w-full text-left px-4 py-2 text-foreground hover:bg-red-50 hover:text-red-600 transition-colors flex items-center gap-2 last:rounded-b-lg"
                     >
                       <LogOut className="w-4 h-4" />
-                      Logout
+                      {t("common.logout")}
                     </button>
                   </div>
                 )}
@@ -99,13 +100,13 @@ export function Header() {
                   href="/login"
                   className="inline-flex items-center justify-center h-10 px-4 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md text-sm font-medium transition-colors"
                 >
-                  Sign In
+                  {t("header.signIn")}
                 </a>
                 <a
                   href="/signup"
                   className="inline-flex items-center justify-center h-10 px-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md text-sm font-medium transition-colors"
                 >
-                  Get Started
+                  {t("header.getStarted")}
                 </a>
               </>
             )}
