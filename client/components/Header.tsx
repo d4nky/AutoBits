@@ -134,7 +134,7 @@ export function Header() {
               className="block text-foreground hover:text-primary transition-colors py-2"
               onClick={() => setIsMenuOpen(false)}
             >
-              Browse Jobs
+              {t("header.browseJobs")}
             </a>
             {isAuth && (
               <a
@@ -142,7 +142,7 @@ export function Header() {
                 className="block text-foreground hover:text-primary transition-colors py-2"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Dashboard
+                {t("common.dashboard")}
               </a>
             )}
             <a
@@ -150,8 +150,11 @@ export function Header() {
               className="block text-foreground hover:text-primary transition-colors py-2"
               onClick={() => setIsMenuOpen(false)}
             >
-              About
+              {t("header.about")}
             </a>
+            <div className="py-2 border-t border-border">
+              <LanguageSwitcher />
+            </div>
             {isAuth ? (
               <>
                 <a
@@ -159,7 +162,7 @@ export function Header() {
                   className="block text-foreground hover:text-primary transition-colors py-2"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  My Profile
+                  {t("header.myProfile")}
                 </a>
                 <button
                   onClick={() => {
@@ -168,7 +171,7 @@ export function Header() {
                   }}
                   className="w-full text-left text-foreground hover:text-red-600 transition-colors py-2"
                 >
-                  Logout
+                  {t("common.logout")}
                 </button>
               </>
             ) : (
@@ -177,13 +180,13 @@ export function Header() {
                   href="/login"
                   className="inline-flex items-center justify-center w-full h-10 px-4 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md text-sm font-medium transition-colors"
                 >
-                  Sign In
+                  {t("header.signIn")}
                 </a>
                 <a
                   href="/signup"
                   className="inline-flex items-center justify-center w-full h-10 px-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md text-sm font-medium transition-colors"
                 >
-                  Get Started
+                  {t("header.getStarted")}
                 </a>
               </div>
             )}
