@@ -1,253 +1,296 @@
-# AutoBits Database Schema
+# Job Marketplace - MongoDB Database Schema
 
-This file documents the database structure needed for AutoBits. Follow the steps below to set up in Supabase.
+This document describes the MongoDB database structure for the temporary job marketplace platform.
 
 ## Setup Instructions
 
-1. **Connect Supabase**: [Connect to Supabase](#open-mcp-popover) and create a new project
-2. **Run the SQL scripts below** in your Supabase SQL editor
-3. **Enable Row Level Security (RLS)** for each table
-4. **Set up Auth** in Supabase dashboard (Email/Password, OAuth: Google, GitHub)
+1. **Create MongoDB Database**: Use MongoDB Atlas (cloud) or local MongoDB instance
+2. **Set Environment Variable**: Add `MONGODB_URI` to `.env` file
+3. **Collections**: Collections will be automatically created by Mongoose when the app starts
 
----
+## MongoDB Collections
 
-## Tables
+### 1. Users Collection
 
-### 1. Users Table
+Stores user and business account information.
 
-Stores user account information.
-
-```sql
-CREATE TABLE users (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  email VARCHAR(255) UNIQUE NOT NULL,
-  full_name VARCHAR(255),
-  user_type VARCHAR(20) NOT NULL CHECK (user_type IN ('buyer', 'creator', 'admin')),
-  avatar_url TEXT,
-  bio TEXT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- TODO: Add RLS policy so users can only read/update their own profile
-CREATE POLICY "Users can read own profile" ON users
-  FOR SELECT USING (auth.uid() = id);
-
-CREATE POLICY "Users can update own profile" ON users
-  FOR UPDATE USING (auth.uid() = id);
+```json
+{
+  "_id": ObjectId,
+  "email": "user@example.com",
+  "passwordHash": "hashed_password",
+  "fullName": "John Doe",
+  "userType": "user|business",
+  "phone": "213XXXXXXXXX",
+  "address": "123 Main St, Algiers",
+  "businessName": "Business Name (only for businesses)",
+  "location": {
+    "latitude": 36.7372,
+    "longitude": 3.0868,
+    "city": "Algiers",
+    "address": "123 Main St"
+  },
+  "avatar": "url_to_avatar",
+  "bio": "User bio/business description",
+  "rating": 4.5,
+  "reviews": 12,
+  "createdAt": ISODate,
+  "updatedAt": ISODate,
+  "isVerified": true,
+  "isActive": true
+}
 ```
 
-### 2. Automations Table
+### 2. Jobs Collection
 
-Stores automation workflow listings.
+Stores job postings/advertisements.
 
-```sql
-CREATE TABLE automations (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  creator_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  title VARCHAR(255) NOT NULL,
-  description TEXT NOT NULL,
-  category VARCHAR(100) NOT NULL,
-  tags TEXT[] DEFAULT '{}',
-  price DECIMAL(10, 2) NOT NULL,
-  file_url TEXT NOT NULL,
-  file_type VARCHAR(20) NOT NULL CHECK (file_type IN ('json', 'yaml', 'zip')),
-  preview_image_url TEXT,
-  average_rating DECIMAL(3, 2) DEFAULT 0,
-  total_reviews INTEGER DEFAULT 0,
-  total_purchases INTEGER DEFAULT 0,
-  status VARCHAR(20) NOT NULL DEFAULT 'published' CHECK (status IN ('draft', 'published', 'archived')),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- TODO: Add RLS policies for read (public), create (auth), update (creator only), delete (creator/admin)
-CREATE POLICY "Automations are viewable by everyone" ON automations
-  FOR SELECT USING (status = 'published');
-
-CREATE POLICY "Creators can create automations" ON automations
-  FOR INSERT WITH CHECK (auth.uid() = creator_id);
-
-CREATE POLICY "Creators can update own automations" ON automations
-  FOR UPDATE USING (auth.uid() = creator_id);
+```json
+{
+  "_id": ObjectId,
+  "businessId": ObjectId,
+  "businessName": "Business Name",
+  "businessPhone": "213XXXXXXXXX",
+  "businessEmail": "business@example.com",
+  "title": "Website Redesign Project",
+  "description": "We need a modern website redesign...",
+  "category": "web-design|writing|data-entry|etc",
+  "tags": ["urgent", "flexible-hours", "remote"],
+  "price": 50000,
+  "currency": "DZD",
+  "location": {
+    "latitude": 36.7372,
+    "longitude": 3.0868,
+    "city": "Algiers",
+    "address": "123 Main St"
+  },
+  "jobType": "one-time|recurring|hourly",
+  "duration": "2 weeks",
+  "status": "open|closed|completed",
+  "views": 245,
+  "applicants": 12,
+  "savedBy": [ObjectId, ObjectId],
+  "createdAt": ISODate,
+  "updatedAt": ISODate,
+  "expiresAt": ISODate,
+  "isActive": true
+}
 ```
 
-### 3. Reviews Table
+### 3. Applications Collection
 
-Stores ratings and reviews.
+Stores job applications from users.
 
-```sql
-CREATE TABLE reviews (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  automation_id UUID NOT NULL REFERENCES automations(id) ON DELETE CASCADE,
-  reviewer_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
-  comment TEXT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE(automation_id, reviewer_id)
-);
-
--- TODO: Add RLS policies (users can only review once, only update own review)
-CREATE POLICY "Reviews are viewable by everyone" ON reviews
-  FOR SELECT USING (true);
+```json
+{
+  "_id": ObjectId,
+  "jobId": ObjectId,
+  "userId": ObjectId,
+  "businessId": ObjectId,
+  "userName": "John Doe",
+  "userEmail": "john@example.com",
+  "userPhone": "213XXXXXXXXX",
+  "coverLetter": "I'm interested in this position...",
+  "portfolioUrl": "https://portfolio.com",
+  "status": "applied|accepted|rejected|completed",
+  "rating": 4.8,
+  "createdAt": ISODate,
+  "updatedAt": ISODate
+}
 ```
 
-### 4. Purchases Table
+### 4. Messages Collection
 
-Stores transaction records.
+Stores direct messages between users and businesses.
 
-```sql
-CREATE TABLE purchases (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  automation_id UUID NOT NULL REFERENCES automations(id) ON DELETE CASCADE,
-  buyer_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  creator_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  amount DECIMAL(10, 2) NOT NULL,
-  platform_fee DECIMAL(10, 2) NOT NULL,
-  creator_earnings DECIMAL(10, 2) NOT NULL,
-  stripe_payment_intent_id VARCHAR(255),
-  stripe_charge_id VARCHAR(255),
-  status VARCHAR(20) NOT NULL DEFAULT 'completed' CHECK (status IN ('pending', 'completed', 'failed', 'refunded')),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- TODO: Add RLS policies (buyers can see own purchases, creators can see own earnings, admins see all)
-CREATE POLICY "Buyers can see own purchases" ON purchases
-  FOR SELECT USING (auth.uid() = buyer_id OR auth.uid() = creator_id);
+```json
+{
+  "_id": ObjectId,
+  "conversationId": "userId-businessId",
+  "senderId": ObjectId,
+  "senderName": "John Doe",
+  "recipientId": ObjectId,
+  "recipientName": "Business Name",
+  "message": "I'm interested in your job posting",
+  "jobId": ObjectId,
+  "attachments": ["url1", "url2"],
+  "isRead": false,
+  "createdAt": ISODate,
+  "updatedAt": ISODate
+}
 ```
 
-### 5. Payouts Table
+### 5. Conversations Collection
 
-Tracks creator payouts.
+Stores conversation metadata for real-time messaging.
 
-```sql
-CREATE TABLE payouts (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  creator_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  amount DECIMAL(10, 2) NOT NULL,
-  stripe_payout_id VARCHAR(255),
-  status VARCHAR(20) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'in_transit', 'paid', 'failed')),
-  period_start DATE NOT NULL,
-  period_end DATE NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  paid_at TIMESTAMP
-);
-
--- TODO: Add RLS policies (creators can only see own payouts)
-CREATE POLICY "Creators can see own payouts" ON payouts
-  FOR SELECT USING (auth.uid() = creator_id);
+```json
+{
+  "_id": ObjectId,
+  "conversationId": "userId-businessId",
+  "userId": ObjectId,
+  "businessId": ObjectId,
+  "lastMessage": "I'm interested in your job posting",
+  "lastMessageTime": ISODate,
+  "unreadCount": 3,
+  "participants": [ObjectId, ObjectId],
+  "createdAt": ISODate,
+  "updatedAt": ISODate
+}
 ```
 
-### 6. Creator Subscriptions Table
+### 6. Favorites Collection
 
-Stores creator subscription tier information.
+Stores saved/favorited jobs by users.
 
-```sql
-CREATE TABLE creator_subscriptions (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  creator_id UUID NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
-  tier VARCHAR(20) NOT NULL DEFAULT 'free' CHECK (tier IN ('free', 'pro', 'enterprise')),
-  stripe_subscription_id VARCHAR(255),
-  unlimited_uploads BOOLEAN DEFAULT FALSE,
-  featured_listing_slots INTEGER DEFAULT 0,
-  analytics_enabled BOOLEAN DEFAULT FALSE,
-  early_feature_access BOOLEAN DEFAULT FALSE,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+```json
+{
+  "_id": ObjectId,
+  "userId": ObjectId,
+  "jobId": ObjectId,
+  "jobTitle": "Website Redesign",
+  "businessName": "Company Name",
+  "price": 50000,
+  "savedAt": ISODate
+}
 ```
 
----
+### 7. Reviews Collection
 
-## Storage Buckets (for Supabase Storage)
+Stores reviews and ratings for businesses and users.
 
-Create the following storage buckets in Supabase:
+```json
+{
+  "_id": ObjectId,
+  "reviewerId": ObjectId,
+  "revieweeId": ObjectId,
+  "jobId": ObjectId,
+  "rating": 4.5,
+  "comment": "Great work! Very satisfied with the result.",
+  "reviewType": "business|user",
+  "createdAt": ISODate,
+  "updatedAt": ISODate
+}
+```
 
-1. **automations** - Store uploaded automation files (.json, .yaml, .zip)
-   - TODO: Set up RLS so users can only upload to their own folder
-2. **avatars** - Store user profile pictures
-   - TODO: Set up RLS so users can only upload to their own avatar
-3. **previews** - Store automation preview images
-   - TODO: Set up RLS for public read, creator write
+### 8. Analytics Collection
 
----
+Stores analytics data for dashboards.
 
-## API Endpoints to Implement
+```json
+{
+  "_id": ObjectId,
+  "businessId": ObjectId,
+  "jobId": ObjectId,
+  "date": ISODate,
+  "views": 50,
+  "clicks": 15,
+  "applicants": 3,
+  "messages": 2
+}
+```
+
+## Indexes
+
+```javascript
+// Users
+db.users.createIndex({ email: 1 }, { unique: true });
+db.users.createIndex({ "location.city": 1 });
+db.users.createIndex({ userType: 1 });
+
+// Jobs
+db.jobs.createIndex({ businessId: 1 });
+db.jobs.createIndex({ "location.city": 1 });
+db.jobs.createIndex({ category: 1 });
+db.jobs.createIndex({ status: 1 });
+db.jobs.createIndex({ createdAt: -1 });
+db.jobs.createIndex({ price: 1 });
+db.jobs.createIndex({ isActive: 1 });
+
+// Applications
+db.applications.createIndex({ jobId: 1 });
+db.applications.createIndex({ userId: 1 });
+db.applications.createIndex({ businessId: 1 });
+db.applications.createIndex({ status: 1 });
+
+// Messages
+db.messages.createIndex({ conversationId: 1 });
+db.messages.createIndex({ senderId: 1 });
+db.messages.createIndex({ recipientId: 1 });
+db.messages.createIndex({ createdAt: -1 });
+
+// Conversations
+db.conversations.createIndex({ conversationId: 1 }, { unique: true });
+db.conversations.createIndex({ userId: 1 });
+db.conversations.createIndex({ businessId: 1 });
+
+// Favorites
+db.favorites.createIndex({ userId: 1 });
+db.favorites.createIndex({ jobId: 1 });
+db.favorites.createIndex({ userId: 1, jobId: 1 }, { unique: true });
+
+// Reviews
+db.reviews.createIndex({ revieweeId: 1 });
+db.reviews.createIndex({ jobId: 1 });
+db.reviews.createIndex({ reviewerId: 1, revieweeId: 1 });
+```
+
+## Environment Variables
+
+```
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/jobmarketplace
+JWT_SECRET=your_jwt_secret_key_here
+PORT=5000
+NODE_ENV=development
+```
+
+## API Endpoints
 
 ### Authentication
+- `POST /api/auth/signup` - Register new user or business
+- `POST /api/auth/login` - Login and get JWT token
+- `POST /api/auth/logout` - Logout (client-side token deletion)
+- `GET /api/auth/me` - Get current user (requires auth)
 
-- `POST /api/auth/signup` - Register new account
-- `POST /api/auth/login` - Login
-- `POST /api/auth/logout` - Logout
-- `POST /api/auth/oauth/google` - Google OAuth
-- `POST /api/auth/oauth/github` - GitHub OAuth
-- `GET /api/auth/me` - Get current user
+### Jobs
+- `GET /api/jobs` - List jobs with filters (location, price, category, search)
+- `GET /api/jobs/:id` - Get job details
+- `POST /api/jobs` - Create job (business only)
+- `PATCH /api/jobs/:id` - Update job (business owner only)
+- `DELETE /api/jobs/:id` - Delete job (business owner only)
 
-### Marketplace
+### Applications
+- `POST /api/applications` - Apply for job
+- `GET /api/applications/job/:jobId` - Get job applications (business owner only)
+- `GET /api/applications/user` - Get user applications
+- `PATCH /api/applications/:id/status` - Update application status
 
-- `GET /api/automations` - List all automations (with filters: category, search, price range, rating)
-- `GET /api/automations/:id` - Get automation details
-- `GET /api/automations/:id/reviews` - Get reviews for an automation
-- `GET /api/categories` - List all categories
+### Messages
+- `GET /api/messages/:conversationId` - Get messages in conversation
+- `POST /api/messages` - Send message (WebSocket)
+- `GET /api/conversations` - Get user conversations
+- `GET /api/conversations/:conversationId` - Get conversation details
 
-### Purchases
+### Favorites
+- `POST /api/favorites` - Save job
+- `DELETE /api/favorites/:jobId` - Remove saved job
+- `GET /api/favorites` - Get user saved jobs
 
-- `POST /api/purchases/intent` - Create Stripe payment intent
-- `POST /api/purchases/confirm` - Confirm purchase after Stripe payment
-- `GET /api/purchases` - Get user's purchases
-- `GET /api/purchases/:id/download` - Download purchased automation file
-
-### Creator
-
-- `POST /api/creator/automations` - Upload new automation
-- `GET /api/creator/automations` - List creator's automations
-- `PATCH /api/creator/automations/:id` - Update automation
-- `DELETE /api/creator/automations/:id` - Delete automation
-- `GET /api/creator/stats` - Get sales analytics
-- `POST /api/creator/subscription/upgrade` - Upgrade subscription tier
+### User Profile
+- `GET /api/users/:id` - Get user profile
+- `PATCH /api/users/:id` - Update user profile
+- `GET /api/users/:id/reviews` - Get user reviews
 
 ### Reviews
-
-- `POST /api/reviews` - Create review/rating
-- `PATCH /api/reviews/:id` - Update own review
-- `DELETE /api/reviews/:id` - Delete own review
-
-### Admin
-
-- `GET /api/admin/users` - List all users
-- `PATCH /api/admin/users/:id/status` - Ban/unban user
-- `GET /api/admin/automations` - List all automations
-- `PATCH /api/admin/automations/:id/status` - Approve/reject automation
-- `GET /api/admin/analytics` - Platform analytics
-
----
-
-## Environment Variables to Set
-
-```
-# Supabase
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key (server-only)
-
-# Stripe
-VITE_STRIPE_PUBLIC_KEY=your_stripe_public_key
-STRIPE_SECRET_KEY=your_stripe_secret_key (server-only)
-
-# File Storage
-MAX_FILE_SIZE_MB=50
-ALLOWED_FILE_TYPES=json,yaml,zip
-```
-
----
+- `POST /api/reviews` - Create review
+- `PATCH /api/reviews/:id` - Update review
+- `DELETE /api/reviews/:id` - Delete review
+- `GET /api/reviews/user/:userId` - Get reviews for user
 
 ## Notes
 
-- **TODO**: All database queries should be replaced with actual Supabase client calls
-- **TODO**: All Stripe operations need your actual Stripe keys and webhook handlers
-- **TODO**: Implement proper error handling and validation in all API endpoints
-- **TODO**: Set up automated emails for order confirmations, payouts, etc.
-- **TODO**: Add rate limiting to prevent abuse
-- **TODO**: Implement caching for frequently accessed data (automations, categories)
+- All timestamps are in ISO 8601 format
+- Location uses latitude/longitude for Google Maps integration
+- User authentication uses JWT tokens
+- Real-time messaging uses Socket.io
+- All sensitive data (passwords) is hashed with bcrypt
