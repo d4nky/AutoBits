@@ -1,6 +1,77 @@
-import mongoose from "mongoose";
+import mongoose, { Document, Model } from "mongoose";
 
-const UserSchema = new mongoose.Schema(
+// Define the interface for the User document
+export interface IUser extends Document {
+  email: string;
+  passwordHash: string;
+  fullName: string;
+  userType: "user" | "business" | "admin";
+  phone: string;
+  address: string;
+  location?: {
+    city?: string;
+    address?: string;
+    mapUrl?: string;
+  };
+  avatar?: string;
+  coverPhoto?: string;
+  bio?: string;
+  skills: string[];
+  languages: Array<{
+    language: string;
+    level: "basic" | "intermediate" | "fluent" | "native";
+  }>;
+  businessName?: string;
+  businessInfo?: {
+    registrationNumber?: string;
+    taxId?: string;
+    website?: string;
+    foundedYear?: number;
+    employeeCount?: "1-10" | "11-50" | "51-200" | "201-500" | "500+";
+    services?: string[];
+    certifications?: string[];
+  };
+  portfolio?: Array<{
+    title: string;
+    description: string;
+    images: string[];
+    date: Date;
+    category: string;
+  }>;
+  rating: number;
+  reviewCount: number;
+  completedJobs: number;
+  isVerified: boolean;
+  settings: {
+    notifications: {
+      email: {
+        messages: boolean;
+        jobUpdates: boolean;
+        marketing: boolean;
+      };
+      push: {
+        messages: boolean;
+        jobUpdates: boolean;
+      };
+    };
+    privacy: {
+      showPhone: boolean;
+      showEmail: boolean;
+      profileVisibility: "public" | "private" | "business-only";
+    };
+    availability: {
+      status: "available" | "busy" | "unavailable";
+      workHours: Array<{
+        day: "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday";
+        start: string;
+        end: string;
+      }>;
+    };
+  };
+  isActive: boolean;
+}
+
+const UserSchema = new mongoose.Schema<IUser>(
   {
     // Basic Info
     email: {
@@ -32,6 +103,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+
 
     // Profile
     avatar: {
@@ -81,21 +153,6 @@ const UserSchema = new mongoose.Schema(
       date: Date,
       category: String,
     }],
-
-    // Location
-    location: {
-      type: {
-        type: String,
-        default: "Point",
-      },
-      coordinates: {
-        type: [Number], // [longitude, latitude]
-        index: "2dsphere",
-      },
-      city: String,
-      address: String,
-      mapUrl: String,
-    },
 
     // Ratings & Verification
     rating: {
@@ -162,4 +219,5 @@ const UserSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-export const User = mongoose.model("User", UserSchema);
+// Check if the model is already registered to prevent recompilation errors
+export const User: Model<IUser> = mongoose.models.User || mongoose.model<IUser>("User", UserSchema);

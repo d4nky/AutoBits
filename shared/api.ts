@@ -18,6 +18,14 @@ export interface SignupRequest {
   city?: string;
 }
 
+export interface Location {
+  type: string | { type: string; default: string };
+  coordinates: number[] | [number, number];
+  city?: string;
+  address?: string;
+  mapUrl?: string;
+}
+
 export interface ListingLocation {
   address: string;
   // Google Maps link (copy-paste). Prefer full URL to the place or coordinates query.
@@ -70,14 +78,6 @@ export interface UserProfile {
   rating: number;
   reviewCount: number;
   isVerified: boolean;
-}
-
-export interface Location {
-  type: string;
-  coordinates: [number, number]; // [longitude, latitude]
-  city?: string;
-  address?: string;
-  mapUrl?: string;
 }
 
 // Job Types

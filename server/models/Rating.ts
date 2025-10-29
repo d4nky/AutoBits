@@ -34,12 +34,12 @@ ratingSchema.index({ user: 1, ratedBy: 1, jobId: 1 }, { unique: true });
 
 // Update user's average rating when a new rating is added
 ratingSchema.post("save", async function() {
-  const User = mongoose.model("User");
+  const User = mongoose.models.User || mongoose.model("User");
   const ratings = await this.model("Rating")
     .find({ user: this.user })
     .select("rating");
   
-  const average = ratings.reduce((acc, curr) => acc + curr.rating, 0) / ratings.length;
+  const average = ratings.reduce((acc, curr) => acc + (curr as any).rating, 0) / ratings.length;
   
   await User.findByIdAndUpdate(this.user, {
     rating: Number(average.toFixed(1)),
@@ -47,4 +47,5 @@ ratingSchema.post("save", async function() {
   });
 });
 
-export const Rating = mongoose.model("Rating", ratingSchema);
+// Check if the model is already registered to prevent recompilation errors
+export const Rating = mongoose.models.Rating || mongoose.model("Rating", ratingSchema);

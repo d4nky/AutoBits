@@ -1,4 +1,17 @@
 import { Request, Response } from 'express';
+import { UserType } from '../middleware/auth';
+
+// Extend Express Request to include our custom user property
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        userId: string;
+        userType: UserType;
+      };
+    }
+  }
+}
 import { z } from 'zod';
 import { User } from '../models/User';
 import { WorkHistory } from '../models/WorkHistory';
@@ -79,7 +92,7 @@ const workHistorySchema = z.object({
 // Profile handlers
 export const handleGetProfile = async (req: Request, res: Response) => {
   try {
-    const userId = req.params.userId || req.user?.id;
+    const userId = req.params.userId || req.user?.userId;
     const user = await User.findById(userId)
       .select('-passwordHash -settings.notifications.email.marketing')
       .lean();
@@ -89,7 +102,7 @@ export const handleGetProfile = async (req: Request, res: Response) => {
     }
 
     // If requesting other user's profile, check privacy settings
-    if (req.params.userId && req.params.userId !== req.user?.id) {
+    if (req.params.userId && req.params.userId !== req.user?.userId) {
       if (user.settings?.privacy?.profileVisibility === 'private') {
         return res.status(403).json({ error: 'Profile is private' });
       }
@@ -119,7 +132,7 @@ export const handleGetProfile = async (req: Request, res: Response) => {
 
 export const handleUpdateProfile = async (req: Request, res: Response) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?.userId;
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     const data = profileUpdateSchema.parse(req.body);
@@ -152,7 +165,7 @@ export const handleUpdateProfile = async (req: Request, res: Response) => {
 
 export const handleUpdateSettings = async (req: Request, res: Response) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?.userId;
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     const data = settingsUpdateSchema.parse(req.body);
@@ -176,7 +189,7 @@ export const handleUpdateSettings = async (req: Request, res: Response) => {
 // Work history handlers
 export const handleAddWorkHistory = async (req: Request, res: Response) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?.userId;
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     const user = await User.findById(userId);
@@ -207,7 +220,7 @@ export const handleAddWorkHistory = async (req: Request, res: Response) => {
 // Profile picture upload handler
 export const handleUploadProfilePicture = async (req: Request, res: Response) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?.userId;
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     // Handle file upload (multer middleware)
