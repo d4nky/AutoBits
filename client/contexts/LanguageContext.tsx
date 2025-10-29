@@ -13,7 +13,7 @@ interface LanguageContextType {
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(
-  undefined
+  undefined,
 );
 
 const translations: Record<Language, any> = {
@@ -29,13 +29,13 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     if (saved && ["en", "fr", "ar"].includes(saved)) {
       return saved;
     }
-    
+
     // Try to detect browser language
     const browserLang = navigator.language.split("-")[0];
     if (["en", "fr", "ar"].includes(browserLang)) {
       return browserLang as Language;
     }
-    
+
     return "en";
   });
 

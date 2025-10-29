@@ -35,7 +35,9 @@ export function LanguageSwitcher() {
                 setIsOpen(false);
               }}
               className={`w-full text-left px-4 py-3 flex items-center gap-3 hover:bg-secondary transition-colors ${
-                language === lang.code ? "bg-primary/10 text-primary font-semibold" : ""
+                language === lang.code
+                  ? "bg-primary/10 text-primary font-semibold"
+                  : ""
               } ${lang.code === "en" ? "rounded-t-lg" : ""} ${
                 lang.code === "ar" ? "rounded-b-lg" : ""
               }`}
