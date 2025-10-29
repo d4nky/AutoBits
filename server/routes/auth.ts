@@ -1,54 +1,97 @@
 import { RequestHandler } from "express";
 import { z } from "zod";
+import jwt from "jsonwebtoken";
+import bcryptjs from "bcryptjs";
+import { User } from "../models/User";
+import { SignupRequest, LoginRequest, AuthResponse, UserProfile } from "@shared/api";
 
-// TODO: Import Supabase client
-// import { createClient } from "@supabase/supabase-js";
-// const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-in-production";
 
 const signupSchema = z.object({
-  email: z.string().email(),
+  email: z.string().email("Invalid email"),
   password: z.string().min(8, "Password must be at least 8 characters"),
-  full_name: z.string(),
-  user_type: z.enum(["buyer", "creator"]),
+  fullName: z.string().min(2, "Name must be at least 2 characters"),
+  phone: z.string(),
+  address: z.string(),
+  userType: z.enum(["user", "business"]),
+  businessName: z.string().optional(),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
+  city: z.string().optional(),
 });
 
 const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string(),
+  email: z.string().email("Invalid email"),
+  password: z.string().min(1, "Password is required"),
 });
 
 export const handleSignup: RequestHandler = async (req, res) => {
   try {
     const data = signupSchema.parse(req.body);
 
-    // TODO: Use Supabase Auth to create user
-    // const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-    //   email: data.email,
-    //   password: data.password,
-    //   email_confirm: false,
-    // });
-    // if (authError) throw authError;
+    const existingUser = await User.findOne({ email: data.email });
+    if (existingUser) {
+      res.status(400).json({ error: "Email already exists" });
+      return;
+    }
 
-    // TODO: Create user profile in users table
-    // const { error: profileError } = await supabase.from("users").insert({
-    //   id: authData.user.id,
-    //   email: data.email,
-    //   full_name: data.full_name,
-    //   user_type: data.user_type,
-    // });
-    // if (profileError) throw profileError;
+    const passwordHash = await bcryptjs.hash(data.password, 10);
 
-    // TODO: If user_type is 'creator', create creator_subscriptions record with free tier
-
-    res.json({
-      success: true,
-      message:
-        "Account created successfully. Please check your email to verify.",
+    const user = new User({
+      email: data.email,
+      passwordHash,
+      fullName: data.fullName,
+      phone: data.phone,
+      address: data.address,
+      userType: data.userType,
+      businessName: data.businessName,
+      location: {
+        latitude: data.latitude,
+        longitude: data.longitude,
+        city: data.city,
+        address: data.address,
+      },
     });
+
+    await user.save();
+
+    const token = jwt.sign(
+      {
+        userId: user._id,
+        email: user.email,
+        userType: user.userType,
+      },
+      JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    const userProfile: UserProfile = {
+      _id: user._id.toString(),
+      email: user.email,
+      fullName: user.fullName,
+      userType: user.userType,
+      phone: user.phone,
+      address: user.address,
+      businessName: user.businessName,
+      location: user.location,
+      rating: user.rating,
+      reviewCount: user.reviewCount,
+      isVerified: user.isVerified,
+    };
+
+    const response: AuthResponse = {
+      success: true,
+      message: "Account created successfully",
+      token,
+      user: userProfile,
+    };
+
+    res.status(201).json(response);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      res.status(400).json({ error: error.errors });
+      res.status(400).json({ error: error.errors[0].message });
     } else {
+      console.error(error);
       res.status(500).json({ error: "Signup failed" });
     }
   }
@@ -58,99 +101,108 @@ export const handleLogin: RequestHandler = async (req, res) => {
   try {
     const data = loginSchema.parse(req.body);
 
-    // TODO: Use Supabase Auth to authenticate user
-    // const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-    //   email: data.email,
-    //   password: data.password,
-    // });
-    // if (authError) throw authError;
+    const user = await User.findOne({ email: data.email });
+    if (!user) {
+      res.status(401).json({ error: "Invalid email or password" });
+      return;
+    }
 
-    // TODO: Return session token (JWT) for client to store
-    // res.json({
-    //   success: true,
-    //   session: {
-    //     access_token: authData.session.access_token,
-    //     refresh_token: authData.session.refresh_token,
-    //     user: authData.user,
-    //   },
-    // });
+    const isPasswordValid = await bcryptjs.compare(
+      data.password,
+      user.passwordHash
+    );
+    if (!isPasswordValid) {
+      res.status(401).json({ error: "Invalid email or password" });
+      return;
+    }
 
-    res.json({
+    const token = jwt.sign(
+      {
+        userId: user._id,
+        email: user.email,
+        userType: user.userType,
+      },
+      JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    const userProfile: UserProfile = {
+      _id: user._id.toString(),
+      email: user.email,
+      fullName: user.fullName,
+      userType: user.userType,
+      phone: user.phone,
+      address: user.address,
+      businessName: user.businessName,
+      location: user.location,
+      rating: user.rating,
+      reviewCount: user.reviewCount,
+      isVerified: user.isVerified,
+    };
+
+    const response: AuthResponse = {
       success: true,
       message: "Login successful",
-      // session: { ... }
-    });
+      token,
+      user: userProfile,
+    };
+
+    res.json(response);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      res.status(400).json({ error: error.errors });
+      res.status(400).json({ error: error.errors[0].message });
     } else {
-      res.status(401).json({ error: "Invalid email or password" });
+      console.error(error);
+      res.status(500).json({ error: "Login failed" });
     }
-  }
-};
-
-export const handleLogout: RequestHandler = async (req, res) => {
-  try {
-    // TODO: Invalidate session token on client
-
-    res.json({ success: true, message: "Logged out successfully" });
-  } catch (error) {
-    res.status(500).json({ error: "Logout failed" });
   }
 };
 
 export const handleGetCurrentUser: RequestHandler = async (req, res) => {
   try {
-    // TODO: Get auth token from request headers (Authorization: Bearer <token>)
-    // TODO: Verify JWT token with Supabase
-    // const { data: userData, error } = await supabase.auth.getUser(token);
-    // if (error) throw error;
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      res.status(401).json({ error: "Missing or invalid authorization header" });
+      return;
+    }
 
-    // TODO: Fetch user profile from users table
-    // const { data: profile } = await supabase.from("users")
-    //   .select("*")
-    //   .eq("id", userData.user.id)
-    //   .single();
+    const token = authHeader.substring(7);
+    const decoded = jwt.verify(token, JWT_SECRET) as {
+      userId: string;
+      email: string;
+      userType: string;
+    };
 
-    res.json({
-      success: true,
-      // user: { id: userData.user.id, email: userData.user.email, ...profile }
-    });
-  } catch (error) {
-    res.status(401).json({ error: "Not authenticated" });
-  }
-};
+    const user = await User.findById(decoded.userId);
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
 
-export const handleOAuthGoogle: RequestHandler = async (req, res) => {
-  try {
-    const { code } = req.body;
-
-    // TODO: Exchange Google auth code for user info
-    // TODO: Create or update user in database
-    // TODO: Return session token
-
-    res.json({
-      success: true,
-      message: "Google login successful",
-    });
-  } catch (error) {
-    res.status(500).json({ error: "Google OAuth failed" });
-  }
-};
-
-export const handleOAuthGitHub: RequestHandler = async (req, res) => {
-  try {
-    const { code } = req.body;
-
-    // TODO: Exchange GitHub auth code for user info
-    // TODO: Create or update user in database
-    // TODO: Return session token
+    const userProfile: UserProfile = {
+      _id: user._id.toString(),
+      email: user.email,
+      fullName: user.fullName,
+      userType: user.userType,
+      phone: user.phone,
+      address: user.address,
+      businessName: user.businessName,
+      location: user.location,
+      rating: user.rating,
+      reviewCount: user.reviewCount,
+      isVerified: user.isVerified,
+    };
 
     res.json({
       success: true,
-      message: "GitHub login successful",
+      user: userProfile,
     });
   } catch (error) {
-    res.status(500).json({ error: "GitHub OAuth failed" });
+    if (error instanceof jwt.JsonWebTokenError) {
+      res.status(401).json({ error: "Invalid or expired token" });
+    } else {
+      console.error(error);
+      res.status(500).json({ error: "Failed to get current user" });
+    }
   }
 };
