@@ -2,12 +2,15 @@ import { Menu, X, LogOut, User } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getToken, logout as logoutAuth } from "@/lib/auth";
+import { useTranslation } from "@/hooks/use-translation";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isAuth, setIsAuth] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     setIsAuth(!!getToken());
