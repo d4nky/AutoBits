@@ -57,9 +57,7 @@ export default function Login() {
         <div className="max-w-md mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-foreground mb-2">Sign In</h1>
-            <p className="text-muted-foreground">
-              Welcome back to JobMarket
-            </p>
+            <p className="text-muted-foreground">Welcome back to JobMarket</p>
           </div>
 
           {error && (
@@ -98,11 +96,7 @@ export default function Login() {
               />
             </div>
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isLoading}
-            >
+            <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Signing in..." : "Sign In"}
             </Button>
 
@@ -117,7 +111,10 @@ export default function Login() {
 
             <p className="text-center text-sm text-muted-foreground">
               Don't have an account?{" "}
-              <a href="/signup" className="text-primary hover:underline font-medium">
+              <a
+                href="/signup"
+                className="text-primary hover:underline font-medium"
+              >
                 Sign up
               </a>
             </p>

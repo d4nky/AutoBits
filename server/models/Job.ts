@@ -77,7 +77,7 @@ const JobSchema = new mongoose.Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export const Job = mongoose.model("Job", JobSchema);

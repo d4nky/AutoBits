@@ -217,7 +217,9 @@ export default function Marketplace() {
                       onClick={() => {
                         // Navigate to job detail page
                         // For now, can show alert or implement detail modal
-                        alert(`Job ${job.title} - Views: ${job.views}, Applicants: ${job.applicants}`);
+                        alert(
+                          `Job ${job.title} - Views: ${job.views}, Applicants: ${job.applicants}`,
+                        );
                       }}
                     >
                       View Details

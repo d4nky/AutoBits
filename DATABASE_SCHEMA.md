@@ -247,12 +247,14 @@ NODE_ENV=development
 ## API Endpoints
 
 ### Authentication
+
 - `POST /api/auth/signup` - Register new user or business
 - `POST /api/auth/login` - Login and get JWT token
 - `POST /api/auth/logout` - Logout (client-side token deletion)
 - `GET /api/auth/me` - Get current user (requires auth)
 
 ### Jobs
+
 - `GET /api/jobs` - List jobs with filters (location, price, category, search)
 - `GET /api/jobs/:id` - Get job details
 - `POST /api/jobs` - Create job (business only)
@@ -260,28 +262,33 @@ NODE_ENV=development
 - `DELETE /api/jobs/:id` - Delete job (business owner only)
 
 ### Applications
+
 - `POST /api/applications` - Apply for job
 - `GET /api/applications/job/:jobId` - Get job applications (business owner only)
 - `GET /api/applications/user` - Get user applications
 - `PATCH /api/applications/:id/status` - Update application status
 
 ### Messages
+
 - `GET /api/messages/:conversationId` - Get messages in conversation
 - `POST /api/messages` - Send message (WebSocket)
 - `GET /api/conversations` - Get user conversations
 - `GET /api/conversations/:conversationId` - Get conversation details
 
 ### Favorites
+
 - `POST /api/favorites` - Save job
 - `DELETE /api/favorites/:jobId` - Remove saved job
 - `GET /api/favorites` - Get user saved jobs
 
 ### User Profile
+
 - `GET /api/users/:id` - Get user profile
 - `PATCH /api/users/:id` - Update user profile
 - `GET /api/users/:id/reviews` - Get user reviews
 
 ### Reviews
+
 - `POST /api/reviews` - Create review
 - `PATCH /api/reviews/:id` - Update review
 - `DELETE /api/reviews/:id` - Delete review

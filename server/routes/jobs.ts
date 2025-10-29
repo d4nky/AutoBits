@@ -6,7 +6,8 @@ import { User } from "../models/User";
 import { Favorite } from "../models/Favorite";
 import { CreateJobRequest, JobsListResponse } from "@shared/api";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-in-production";
+const JWT_SECRET =
+  process.env.JWT_SECRET || "your-secret-key-change-in-production";
 
 const createJobSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),
@@ -292,12 +293,7 @@ export const handleUpdateJob: RequestHandler = async (req, res) => {
     if (data.jobType) job.jobType = data.jobType;
     if (data.duration) job.duration = data.duration;
 
-    if (
-      data.latitude &&
-      data.longitude &&
-      data.city &&
-      data.address
-    ) {
+    if (data.latitude && data.longitude && data.city && data.address) {
       job.location = {
         latitude: data.latitude,
         longitude: data.longitude,
@@ -447,7 +443,7 @@ export const handleUnsaveJob: RequestHandler = async (req, res) => {
     const job = await Job.findById(jobId);
     if (job) {
       job.savedBy = job.savedBy.filter(
-        (id) => id.toString() !== authUser.userId
+        (id) => id.toString() !== authUser.userId,
       );
       await job.save();
     }

@@ -27,8 +27,9 @@ export default function Index() {
             </h1>
             <p className="text-lg text-muted-foreground mb-8 max-w-lg">
               Connect with local businesses posting temporary job opportunities.
-              Browse jobs by location, price, and category. Perfect for students,
-              freelancers, and anyone looking for flexible work in Algeria.
+              Browse jobs by location, price, and category. Perfect for
+              students, freelancers, and anyone looking for flexible work in
+              Algeria.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
@@ -143,11 +144,21 @@ export default function Index() {
               {[
                 {
                   title: "For Job Seekers",
-                  steps: ["Sign up with your profile", "Browse nearby jobs", "Apply or message businesses", "Get hired and complete work"],
+                  steps: [
+                    "Sign up with your profile",
+                    "Browse nearby jobs",
+                    "Apply or message businesses",
+                    "Get hired and complete work",
+                  ],
                 },
                 {
                   title: "For Businesses",
-                  steps: ["Create business account", "Post a job opportunity", "Receive applications", "Hire and manage workers"],
+                  steps: [
+                    "Create business account",
+                    "Post a job opportunity",
+                    "Receive applications",
+                    "Hire and manage workers",
+                  ],
                 },
               ].map((section, i) => (
                 <div key={i}>
@@ -171,7 +182,9 @@ export default function Index() {
             <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl p-8 h-96 flex items-center justify-center">
               <div className="text-center">
                 <Users className="w-24 h-24 text-primary mx-auto mb-4 opacity-50" />
-                <p className="text-muted-foreground">Simple and straightforward</p>
+                <p className="text-muted-foreground">
+                  Simple and straightforward
+                </p>
               </div>
             </div>
           </div>
@@ -212,13 +225,22 @@ export default function Index() {
               © 2024 JobMarket. All rights reserved.
             </p>
             <div className="flex gap-6 mt-4 sm:mt-0 text-sm">
-              <Link to="/about" className="text-muted-foreground hover:text-foreground">
+              <Link
+                to="/about"
+                className="text-muted-foreground hover:text-foreground"
+              >
                 About
               </Link>
-              <a href="#" className="text-muted-foreground hover:text-foreground">
+              <a
+                href="#"
+                className="text-muted-foreground hover:text-foreground"
+              >
                 Privacy
               </a>
-              <a href="#" className="text-muted-foreground hover:text-foreground">
+              <a
+                href="#"
+                className="text-muted-foreground hover:text-foreground"
+              >
                 Terms
               </a>
             </div>

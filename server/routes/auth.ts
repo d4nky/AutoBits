@@ -3,9 +3,15 @@ import { z } from "zod";
 import jwt from "jsonwebtoken";
 import bcryptjs from "bcryptjs";
 import { User } from "../models/User";
-import { SignupRequest, LoginRequest, AuthResponse, UserProfile } from "@shared/api";
+import {
+  SignupRequest,
+  LoginRequest,
+  AuthResponse,
+  UserProfile,
+} from "@shared/api";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-in-production";
+const JWT_SECRET =
+  process.env.JWT_SECRET || "your-secret-key-change-in-production";
 
 const signupSchema = z.object({
   email: z.string().email("Invalid email"),
@@ -62,7 +68,7 @@ export const handleSignup: RequestHandler = async (req, res) => {
         userType: user.userType,
       },
       JWT_SECRET,
-      { expiresIn: "7d" }
+      { expiresIn: "7d" },
     );
 
     const userProfile: UserProfile = {
@@ -109,7 +115,7 @@ export const handleLogin: RequestHandler = async (req, res) => {
 
     const isPasswordValid = await bcryptjs.compare(
       data.password,
-      user.passwordHash
+      user.passwordHash,
     );
     if (!isPasswordValid) {
       res.status(401).json({ error: "Invalid email or password" });
@@ -123,7 +129,7 @@ export const handleLogin: RequestHandler = async (req, res) => {
         userType: user.userType,
       },
       JWT_SECRET,
-      { expiresIn: "7d" }
+      { expiresIn: "7d" },
     );
 
     const userProfile: UserProfile = {
@@ -162,7 +168,9 @@ export const handleGetCurrentUser: RequestHandler = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      res.status(401).json({ error: "Missing or invalid authorization header" });
+      res
+        .status(401)
+        .json({ error: "Missing or invalid authorization header" });
       return;
     }
 

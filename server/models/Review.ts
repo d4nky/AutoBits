@@ -29,7 +29,7 @@ const ReviewSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 ReviewSchema.index({ revieweeId: 1 });

@@ -12,7 +12,9 @@ export default function Signup() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
-  const defaultType = (searchParams.get("type") || "user") as "user" | "business";
+  const defaultType = (searchParams.get("type") || "user") as
+    | "user"
+    | "business";
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -57,7 +59,8 @@ export default function Signup() {
         phone: formData.phone,
         address: formData.address,
         userType,
-        businessName: userType === "business" ? formData.businessName : undefined,
+        businessName:
+          userType === "business" ? formData.businessName : undefined,
       });
 
       toast({
@@ -204,17 +207,16 @@ export default function Signup() {
               </div>
             )}
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isLoading}
-            >
+            <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Creating account..." : "Sign Up"}
             </Button>
 
             <p className="text-center text-sm text-muted-foreground">
               Already have an account?{" "}
-              <a href="/login" className="text-primary hover:underline font-medium">
+              <a
+                href="/login"
+                className="text-primary hover:underline font-medium"
+              >
                 Sign in
               </a>
             </p>

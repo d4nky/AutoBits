@@ -32,7 +32,7 @@ const AnalyticsSchema = new mongoose.Schema(
       default: 0,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export const Analytics = mongoose.model("Analytics", AnalyticsSchema);

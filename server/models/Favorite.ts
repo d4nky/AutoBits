@@ -16,7 +16,7 @@ const FavoriteSchema = new mongoose.Schema(
     businessName: String,
     price: Number,
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 FavoriteSchema.index({ userId: 1, jobId: 1 }, { unique: true });

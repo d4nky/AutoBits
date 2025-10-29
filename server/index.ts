@@ -3,11 +3,7 @@ import express from "express";
 import cors from "cors";
 import { connectDB } from "./db";
 import { handleDemo } from "./routes/demo";
-import {
-  handleSignup,
-  handleLogin,
-  handleGetCurrentUser,
-} from "./routes/auth";
+import { handleSignup, handleLogin, handleGetCurrentUser } from "./routes/auth";
 import {
   handleListJobs,
   handleGetJobDetail,

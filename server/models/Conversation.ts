@@ -30,7 +30,7 @@ const ConversationSchema = new mongoose.Schema(
       },
     ],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export const Conversation = mongoose.model("Conversation", ConversationSchema);

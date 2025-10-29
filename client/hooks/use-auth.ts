@@ -8,9 +8,7 @@ import {
 } from "@/lib/auth";
 
 export function useAuth() {
-  const [user, setUser] = useState<UserProfile | null>(() =>
-    getCurrentUser()
-  );
+  const [user, setUser] = useState<UserProfile | null>(() => getCurrentUser());
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(!!getToken());
 
