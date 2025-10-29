@@ -11,11 +11,37 @@ export interface SignupRequest {
   fullName: string;
   phone: string;
   address: string;
-  userType: "user" | "business";
+  userType: "user" | "business" | "admin";
   businessName?: string;
   latitude?: number;
   longitude?: number;
   city?: string;
+}
+
+export interface ListingLocation {
+  address: string;
+  // Google Maps link (copy-paste). Prefer full URL to the place or coordinates query.
+  mapUrl?: string;
+}
+
+export interface Listing {
+  _id: string;
+  title: string;
+  description: string;
+  price: number;
+  currency: string;
+  location: ListingLocation;
+  imageUrl: string;
+  business: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateListingRequest {
+  title: string;
+  description: string;
+  price: number;
+  location: ListingLocation;
 }
 
 export interface LoginRequest {
@@ -34,7 +60,7 @@ export interface UserProfile {
   _id: string;
   email: string;
   fullName: string;
-  userType: "user" | "business";
+  userType: "user" | "business" | "admin";
   phone: string;
   address: string;
   businessName?: string;
@@ -47,10 +73,11 @@ export interface UserProfile {
 }
 
 export interface Location {
-  latitude: number;
-  longitude: number;
-  city: string;
-  address: string;
+  type: string;
+  coordinates: [number, number]; // [longitude, latitude]
+  city?: string;
+  address?: string;
+  mapUrl?: string;
 }
 
 // Job Types
@@ -185,6 +212,25 @@ export interface DashboardStats {
   averageRating: number;
   activeJobs: number;
   completedJobs: number;
+}
+
+// Admin Types
+export interface AdminListUsersResponse {
+  success: boolean;
+  users: UserProfile[];
+  total: number;
+  page: number;
+  pages: number;
+}
+
+export interface AdminUpdateUserStatusRequest {
+  isActive?: boolean;
+  isVerified?: boolean;
+}
+
+export interface AdminUserActionResponse {
+  success: boolean;
+  message: string;
 }
 
 export interface DemoResponse {

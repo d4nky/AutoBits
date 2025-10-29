@@ -1,0 +1,146 @@
+import { RequestHandler } from "express";
+import { z } from "zod";
+import { Listing } from "../models/Listing";
+
+const listingSchema = z.object({
+  title: z.string().min(3, "Title must be at least 3 characters"),
+  description: z.string().min(10, "Description must be at least 10 characters"),
+  price: z.number().min(0, "Price cannot be negative"),
+  location: z.object({
+    address: z.string(),
+  import { handleFileUpload, uploadToGridFS } from "../utils/fileUpload";
+    latitude: z.number(),
+    longitude: z.number(),
+  }),
+  imageUrl: z.string().url("Invalid image URL"),
+});
+
+export const handleGetAllListings: RequestHandler = async (req, res) => {
+  try {
+    const { search, minPrice, maxPrice } = req.query;
+    
+    const query: any = {};
+    
+    if (search) {
+      query.$or = [
+      // First, validate the text data
+      const { title, description, price, location } = listingSchema.parse(
+        JSON.parse(req.body.data || '{}')
+      );
+    
+      // Then, handle the file upload
+      if (!req.file) {
+        return res.status(400).json({ error: "Image is required" });
+      }
+
+      // Upload the file to GridFS
+      const fileId = await uploadToGridFS(req.file);
+
+      // Create the listing with the file ID as the image URL
+        { title: { $regex: search, $options: 'i' } },
+        title,
+        description,
+        price,
+        location,
+        imageUrl: `/api/files/${fileId}`,
+      ];
+    }
+    
+    if (minPrice || maxPrice) {
+      query.price = {};
+      if (minPrice) query.price.$gte = Number(minPrice);
+      if (maxPrice) query.price.$lte = Number(maxPrice);
+    }
+
+    const listings = await Listing.find(query)
+      .sort({ createdAt: -1 })
+      .populate('business', 'businessName');
+
+    res.json(listings);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch listings" });
+  }
+};
+
+export const handleCreateListing: RequestHandler = async (req, res) => {
+  try {
+    const data = listingSchema.parse(req.body);
+    
+    // @ts-ignore - We'll add auth middleware later
+    const businessId = req.user?.id;
+    if (!businessId) {
+      return res.status(401).json({ error: "Unauthorized" });
+      // Handle file upload if there is one
+      let imageUrl = listing.imageUrl;
+      if (req.file) {
+        const fileId = await uploadToGridFS(req.file);
+        imageUrl = `/api/files/${fileId}`;
+      }
+
+      // Parse and validate the text data
+      const { title, description, price, location } = listingSchema.parse(
+        JSON.parse(req.body.data || '{}')
+      );
+    }
+
+    const listing = new Listing({
+      ...data,
+          title,
+          description,
+          price,
+          location,
+          imageUrl,
+    });
+
+    await listing.save();
+    res.status(201).json(listing);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: error.errors[0].message });
+      return;
+    }
+    res.status(500).json({ error: "Failed to create listing" });
+  }
+};
+
+export const handleGetBusinessListings: RequestHandler = async (req, res) => {
+  try {
+    // @ts-ignore - We'll add auth middleware later
+    const businessId = req.user?.id;
+    if (!businessId) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const listings = await Listing.find({ business: businessId })
+      .sort({ createdAt: -1 });
+    
+    res.json(listings);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch listings" });
+  }
+};
+
+export const handleDeleteListing: RequestHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    // @ts-ignore - We'll add auth middleware later
+    const businessId = req.user?.id;
+    
+    if (!businessId) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const listing = await Listing.findOneAndDelete({
+      _id: id,
+      business: businessId,
+    });
+
+    if (!listing) {
+      return res.status(404).json({ error: "Listing not found" });
+    }
+
+    res.json({ message: "Listing deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to delete listing" });
+  }
+};

@@ -24,6 +24,20 @@ const signupSchema = z.object({
   latitude: z.number().optional(),
   longitude: z.number().optional(),
   city: z.string().optional(),
+}).refine((data) => {
+  // Ensure business accounts have required fields
+  if (data.userType === "business") {
+    return !!(data.businessName && data.latitude && data.longitude && data.city);
+  }
+  return true;
+}, {
+  message: "Business accounts require business name, location (latitude/longitude), and city"
+}).refine((data) => {
+  // For now, only allow user accounts through normal signup
+  // Business accounts need to go through verification
+  return data.userType === "user";
+}, {
+  message: "Business accounts must go through the verification process. Please contact support."
 });
 
 const loginSchema = z.object({
